@@ -45,6 +45,7 @@ var scorEL = document.getElementById("Assign-Score");
 var index = 0;
 var score = 0;
 var timeLeft = 30;
+var displayTime = document.getElementById("Display-Time");  
 
 function startGame() {
   showQuestions();
@@ -69,15 +70,14 @@ function showQuestions() {
 
 function correctAnswer(answer) {
   console.log(answer);
-  var message = document.createElement("p");
-  questionBox.append(message);
+  var message = document.getElementById("message");
   if (answer === questions[index].answer) {
     score++;
     scorEL.innerHTML = score;
     message.innerHTML = "your answer was correct!";
   } else {
     message.innerHTML = "your answer was incorrect";
-    timeLeft = timeLeft - 10;
+    timeLeft = timeLeft - 5;
   }
 
   index++;
@@ -90,7 +90,6 @@ function correctAnswer(answer) {
 }
 
 function keepTime() {
-  var displayTime = document.getElementById("Display-Time");  
   var timer = setInterval(function () {
     timeLeft--;
     displayTime.innerHTML = timeLeft
@@ -102,5 +101,21 @@ function keepTime() {
 }
 
 function endGame() {
-  
+  displayTime.innerHTML = 0;
+  questionBox.innerHTML = "";
+  questionBox.innerHTML = (`
+  <form onsubmit="saveScore(e)">
+  <div class="form-group">
+    <label for="initials">Initials</label>
+    <input type="text" class="form-control" id="initials" placeholder="Enter your initials!">
+  </div>
+  <input type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  `)
+}
+
+function saveScore(e) {
+e.preventDefault();
+var name = document.getElementById("initials").value;
+console.log(name);
 }
