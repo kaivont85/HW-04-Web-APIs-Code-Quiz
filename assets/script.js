@@ -41,11 +41,15 @@ const startButton = document.getElementById("start-btn");
 startButton.addEventListener("click", startGame);
 var questionBox = document.getElementById("questions");
 var scorEL = document.getElementById("Assign-Score");
+var displayTime = document.getElementById("Display-Time");
+var bestScore = document.getElementById("high-score");
 
 var index = 0;
 var score = 0;
 var timeLeft = 30;
-var displayTime = document.getElementById("Display-Time");  
+var userInitials = [];
+var scoreArray = [];
+
 
 function startGame() {
   showQuestions();
@@ -58,12 +62,12 @@ function showQuestions() {
   question.innerHTML = questions[index].question;
 
   var buttons = document.createElement("div");
-  buttons.innerHTML = (`
+  buttons.innerHTML = `
   <button id="A" onclick="correctAnswer(0)" class="button">${questions[index].choices[0]}</button>
   <button id="B" onclick="correctAnswer(1)" class="button">${questions[index].choices[1]}</button>
   <button id="C" onclick="correctAnswer(2)" class="button">${questions[index].choices[2]}</button>
   <button id="D" onclick="correctAnswer(3)" class="button">${questions[index].choices[3]}</button>
-  `);
+  `;
 
   questionBox.append(question, buttons);
 }
@@ -86,13 +90,12 @@ function correctAnswer(answer) {
   } else {
     endGame();
   }
-  
 }
 
 function keepTime() {
   var timer = setInterval(function () {
     timeLeft--;
-    displayTime.innerHTML = timeLeft
+    displayTime.innerHTML = timeLeft;
     if (timeLeft <= 0) {
       clearInterval(timer);
       endGame();
@@ -103,19 +106,52 @@ function keepTime() {
 function endGame() {
   displayTime.innerHTML = 0;
   questionBox.innerHTML = "";
-  questionBox.innerHTML = (`
-  <form onsubmit="saveScore(e)">
-  <div class="form-group">
-    <label for="initials">Initials</label>
-    <input type="text" class="form-control" id="initials" placeholder="Enter your initials!">
-  </div>
-  <input type="submit" class="btn btn-primary">Submit</button>
-  </form>
-  `)
+  // var saveButton = document.getElementById("save");
+  // saveButton.addEventListener('click' , saveScore);
 }
 
-function saveScore(e) {
-e.preventDefault();
-var name = document.getElementById("initials").value;
-console.log(name);
+function getInitials() {
+  var name = document.getElementById("initials").value;
+
+  if (localStorage.getItem("userInitials")) {
+    var names = JSON.parse(localStorage.getItem("userInitials"));
+    names.push(name);
+    localStorage.setItem("userInitials", JSON.stringify(names));
+  } else {
+    userInitials.push(name);
+    localStorage.setItem("userInitials", JSON.stringify(userInitials));
+  }
+  if (localStorage.getItem("highScores")) {
+    var scores = JSON.parse(localStorage.getItem("highScores"));
+    scores.push(score);
+    localStorage.setItem("highScores", JSON.stringify(scores));
+  } else {
+    scoreArray.push(score);
+    localStorage.setItem("highScores", JSON.stringify(scoreArray));
+  }
+  showHighScores();
 }
+
+function showHighScores() {
+  var userName = JSON.parse(localStorage.getItem("userInitials"));
+  var userScore = JSON.parse(localStorage.getItem("highScores"));
+  questionBox.innerHTML = "";
+  bestScore.innerHTML = "";
+
+  var displayScores = document.createElement("ul");
+  for (let index = 0; index < userName.length; index++) {
+  console.log(userName[index])
+  var listItem = document.createElement("li");
+  listItem.innerHTML = `${userName[index]} ${userScore[index]}`
+  displayScores.append(listItem); 
+  }
+  
+  questionBox.append(displayScores);
+
+}
+
+
+// function saveScore(e) {
+// e.preventDefault();
+// // console.log(name);
+// }
